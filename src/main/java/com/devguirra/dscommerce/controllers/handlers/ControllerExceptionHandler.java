@@ -1,6 +1,7 @@
 package com.devguirra.dscommerce.controllers.handlers;
 
 import com.devguirra.dscommerce.dto.CustomError;
+import com.devguirra.dscommerce.services.exceptions.DataBaseException;
 import com.devguirra.dscommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,19 @@ import java.time.Instant;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<CustomError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(DataBaseException.class)
+    public ResponseEntity<CustomError> DataBase(DataBaseException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
 }
